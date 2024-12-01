@@ -15,7 +15,7 @@ def create_transaction(request):
     if request.method == 'POST':
         try:
             data = json.loads(request.body)
-            user = get_object_or_404(request.user)
+            user = get_object_or_404(User, name=request.user.name)
             transaction_type = get_object_or_404(TransactionType, id=data['id'])
             category = get_object_or_404(Category, id=data['category_id'])
 
@@ -29,12 +29,12 @@ def create_transaction(request):
             )
             logger.error(f"Error occurred: {str(e)}")
             response_data = {'message': 'Transaction created successfully', 'id': transaction.id}
-            return Response(json.dumps(response_data), content_type="application/json", status=201)
+            return HttpResponse(json.dumps(response_data), content_type="application/json", status=201)
         
         except Exception as e:
             response_data = {'message': str(e)}
-            return Response(json.dumps(response_data), content_type="application/json", status=400)
-        return Response(json.dumps({'error':'Invalid Http Method'}), content_type="application/json", status=405)
+            return HttpResponse(json.dumps(response_data), content_type="application/json", status=400)
+        return HttpResponse(json.dumps({'error':'Invalid Http Method'}), content_type="application/json", status=405)
 
 def update_transaction(request, transaction_id):
     if request.method == "PUT":
@@ -48,11 +48,11 @@ def update_transaction(request, transaction_id):
             transaction.description = data.get('description', transaction.description)
             transaction.save()
             response_data = {'message': 'Transaction updated successfully'}
-            return Response(json.dumps(response_data), content_type="application/json", status=200)
+            return HttpResponse(json.dumps(response_data), content_type="application/json", status=200)
         except Exception as e:
             response_data = {'message': str(e)}
-            return Response(json.dumps(response_data), content_type="application/json", status=400)
-        return Response(json.dumps({'error':'Invalid Http Method'}), content_type="application/json", status=405)
+            return HttpResponse(json.dumps(response_data), content_type="application/json", status=400)
+        return HttpResponse(json.dumps({'error':'Invalid Http Method'}), content_type="application/json", status=405)
 
 
 def delete_transaction(request, transaction_id):
@@ -61,9 +61,9 @@ def delete_transaction(request, transaction_id):
             transaction = get_object_or_404(Transaction, id=transaction_id)
             transaction.delete
             response_data = {'message': 'Transaction deleted successfully'}
-            return Response(json.dumps(response_data), content_type="application/json", status=200)
+            return HttpResponse(json.dumps(response_data), content_type="application/json", status=200)
         except Exception as e:
             response_data = {'message': str(e)}
-            return Response(json.dumps(response_data), content_type="application/json", status=400)
-        return Response(json.dumps({'error':'Invalid Http Method'}), content_type="application/json", status=405)
+            return HttpResponse(json.dumps(response_data), content_type="application/json", status=400)
+        return HttpResponse(json.dumps({'error':'Invalid Http Method'}), content_type="application/json", status=405)
 

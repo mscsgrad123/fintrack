@@ -28,6 +28,8 @@ SECRET_KEY = 'django-insecure--!qzw!*(jnsgzwo_it90y*juu)9-q_mp(6(rm@&cl5ey3%+k9l
 DEBUG = True
 
 ALLOWED_HOSTS = ['*']
+AWS_REGION = os.getenv('AWS_REGION', 'us-west-2')
+SNS_TOPIC_ARN = os.getenv('SNS_TOPIC_ARN')
 
 
 # Application definition

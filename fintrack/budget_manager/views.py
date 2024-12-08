@@ -5,7 +5,9 @@ from .serializers import BudgetSerializer
 from django.db.models import Sum
 from transaction.models import Transaction
 from rest_framework.pagination import PageNumberPagination
-
+import boto3
+from botocore.exceptions import ClientError
+from django.conf import settings
 
 class BudgetPagination(PageNumberPagination):
     page_size=5
@@ -70,14 +72,34 @@ class BudgetViewSet(viewsets.ModelViewSet):
     
 
 
-    def get_budget_status_message(self, total_expenses, limit):
-        percentage = (total_expenses / limit) * 100 if limit > 0 else 0
-        if percentage > 100:
-            return "Limit exceeded!"
-        elif percentage==100:
-            return "Limit reached!"
-        elif percentage >= 90:
-            return "90'%' of the limit reached!"
+    def get_budget_status_message(self, total_expenses, limit, category):
+    """
+    Check budget status for a specific category, return a message, and send SNS alerts if conditions are met.
+    """
+    percentage = (total_expenses / limit) * 100 if limit > 0 else 0
+
+    # Determine the status message
+    if percentage > 100:
+        message = f"Budget limit exceeded for the '{category}' category!"
+    elif percentage == 100:
+        message = f"Budget limit reached for the '{category}' category!"
+    elif percentage >= 90:
+        message = f"90% of the budget limit reached for the '{category}' category!"
+    else:
+        return None  # No alert needed
+
+    # Send SNS alert for significant budget thresholds
+    try:
+        sns_client = boto3.client('sns', region_name=settings.AWS_REGION)
+        sns_client.publish(
+            TopicArn=settings.SNS_TOPIC_ARN,
+            Message=f"Hi {self.name}, {message} Your total expenses: ${total_expenses}, Budget limit: ${limit}.",
+            Subject="Budget Alert"
+        )
+    except ClientError as e:
+        print(f"Failed to send alert: {e}")
+
+    return message
         
         
     def destroy(self, request, *args, **kwargs):

@@ -17,10 +17,12 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path,include
 from rest_framework.routers import DefaultRouter
-from track.views import TransactionViewSet, UserViewSet, TransactionTypeViewSet, CategoryViewSet
+from transaction.views import TransactionViewSet, UserViewSet, TransactionTypeViewSet, CategoryViewSet
+from budget_manager.views import BudgetViewSet
 
 router = DefaultRouter()
 router.register(r'transactions', TransactionViewSet)
+router.register(r'budget-manager',BudgetViewSet)
 router.register(r'users', UserViewSet)
 router.register(r'transaction-types', TransactionTypeViewSet)
 router.register(r'categories', CategoryViewSet)

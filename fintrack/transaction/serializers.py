@@ -19,29 +19,24 @@ class CategorySerializer(serializers.ModelSerializer):
 class TransactionSerializer(serializers.ModelSerializer):
     transaction_type = TransactionTypeSerializer()
     category = CategorySerializer()
-    user = UserSerializer() 
 
     class Meta:
         model=Transaction
-        fields=['id','date','transaction_type','category','amount','description','user']
+        fields=['id','date','transaction_type','category','amount','description']
 
     def create(self,validated_data):
         transaction_type_data = validated_data.pop('transaction_type')
         category_data = validated_data.pop('category')
-        user_data = validated_data.pop('user')
-
-        print(transaction_type_data,type(transaction_type_data))
-        print(category_data,type(category_data))
-        print(user_data,type(user_data))
 
         transaction_type = TransactionType.objects.get(name=transaction_type_data['name'])
         category = Category.objects.get(name=category_data['name'])
-        user = User.objects.get(name=user_data['name'])
+
+        validated_data.pop('user',None)
 
         transaction = Transaction.objects.create(
             transaction_type=transaction_type,
             category = category,
-            user = user,
+            user = self.context['request'].user,
             **validated_data
         )
 
@@ -50,17 +45,14 @@ class TransactionSerializer(serializers.ModelSerializer):
     def update(self,instance,validated_data):
         transaction_type_data = validated_data.pop('transaction_type', None)
         category_data = validated_data.pop('category', None)
-        user_data = validated_data.pop('user', None)
 
         if transaction_type_data:
-            transaction_type = TransactionType.objects.get(id=transaction_type_data['id'])
+            transaction_type = TransactionType.objects.get(name=transaction_type_data['name'])
             instance.transaction_type = transaction_type
         if category_data:
-            category = Category.objects.get(id=category_data['id'])
+            category = Category.objects.get(name=category_data['name'])
             instance.category = category
-        if user_data:
-            user = User.objects.get(id=user_data['id'])
-            instance.user = user
+        
 
         for attr, value in validated_data.items():
             setattr(instance, attr, value)

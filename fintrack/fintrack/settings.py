@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/5.1/ref/settings/
 """
 
 from pathlib import Path
+from celery.schedules import crontab
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -140,4 +141,13 @@ REST_FRAMEWORK = {
         'rest_framework.pagination.PageNumberPagination',
     ],
     'PAGE_SIZE':5,
+}
+
+CELERY_BROKER_URL ='redis://localhost:6379/0' 
+
+CELERY_BEAT_SCHEDULE = {
+    'generate-transactions-every-15-minutes':{
+        'task': 'transaction.tasks.generate_random_transactions',
+        'schedule': crontab(minute='*/15')
+    }
 }

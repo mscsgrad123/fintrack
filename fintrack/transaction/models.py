@@ -22,7 +22,7 @@ class TransactionType(models.Model):
     
 class PaymentMethod(models.Model):
     id = models.AutoField(primary_key=True)
-    name = models.CharField(max_length=50, unique=True)
+    name = models.CharField(max_length=50, default='cash')
     description = models.TextField(blank=True, null=True)
 
     def _str_(self):
@@ -44,7 +44,7 @@ class Transaction(models.Model):
     amount = models.DecimalField(max_digits=10, decimal_places=2)
     description = models.CharField(max_length=100)
     user = models.ForeignKey(User, on_delete=models.CASCADE) 
-
+    payment = models.ForeignKey(PaymentMethod, on_delete=models.CASCADE)
 
     def __str__(self):
         return self.description

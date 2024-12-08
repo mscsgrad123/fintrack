@@ -1,6 +1,6 @@
 from rest_framework import viewsets
-from .models import Transaction,User,TransactionType,Category
-from .serializers import TransactionSerializer,UserSerializer,TransactionTypeSerializer,CategorySerializer
+from .models import Transaction,User,TransactionType,Category,PaymentMethod
+from .serializers import TransactionSerializer,UserSerializer,TransactionTypeSerializer,CategorySerializer,PaymentMethodSerializer
 from budget_manager.models import Budget
 from django.db.models import Sum
 from rest_framework.pagination import PageNumberPagination
@@ -9,7 +9,6 @@ class CommonPaginator(PageNumberPagination):
     page_size=5
     page_size_query_param='page_size'
     max_page_size=30
-
 
 class TransactionViewSet(viewsets.ModelViewSet):
     queryset = Transaction.objects.all()
@@ -21,6 +20,9 @@ class UserViewSet(viewsets.ModelViewSet):
     serializer_class = UserSerializer
     pagination_class = PageNumberPagination
 
+    def get_queryset(self):
+        return User.objects.filter(username=self.request.user)
+
 class TransactionTypeViewSet(viewsets.ModelViewSet):
     queryset = TransactionType.objects.all()
     serializer_class = TransactionTypeSerializer
@@ -30,3 +32,9 @@ class CategoryViewSet(viewsets.ModelViewSet):
     queryset = Category.objects.all()
     serializer_class = CategorySerializer
     pagination_class = PageNumberPagination
+
+class PaymentMethodViewSet(viewsets.ModelViewSet):
+    queryset = PaymentMethod.objects.all()
+    serializer_class = PaymentMethodSerializer
+    pagination_class = PageNumberPagination
+

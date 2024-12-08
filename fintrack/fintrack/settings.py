@@ -85,7 +85,7 @@ DATABASES = {
         'NAME': 'database-1',
         'USER': 'postgres',
         'PASSWORD': 'fintrack03',
-        'HOST': 'database-1.cd0i6gqccvzj.us-east-1.rds.amazonaws.com',
+        'HOST': 'database-1.ch08i2euk5iy.us-west-2.rds.amazonaws.com',
         'PORT': '5432',
     }
 }
